@@ -1,0 +1,676 @@
+{
+    "1.png": [
+        {
+            "id": 1,
+            "color": [
+                0,
+                165,
+                255
+            ],
+            "bboxlocation": [
+                [
+                    34,
+                    14
+                ],
+                [
+                    44,
+                    24
+                ]
+            ],
+            "object_type": "circle",
+            "color_name": "orange",
+            "distances": [
+                {
+                    "object_id": 2,
+                    "object_type": "circle",
+                    "distance": 21.1
+                },
+                {
+                    "object_id": 3,
+                    "object_type": "circle",
+                    "distance": 44.72
+                },
+                {
+                    "object_id": 4,
+                    "object_type": "square",
+                    "distance": 59.08
+                },
+                {
+                    "object_id": 5,
+                    "object_type": "circle",
+                    "distance": 45.88
+                },
+                {
+                    "object_id": 6,
+                    "object_type": "square",
+                    "distance": 51.04
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "color": [
+                0,
+                255,
+                255
+            ],
+            "bboxlocation": [
+                [
+                    13,
+                    16
+                ],
+                [
+                    23,
+                    26
+                ]
+            ],
+            "object_type": "circle",
+            "color_name": "yellow",
+            "distances": [
+                {
+                    "object_id": 1,
+                    "object_type": "circle",
+                    "distance": 21.1
+                },
+                {
+                    "object_id": 3,
+                    "object_type": "circle",
+                    "distance": 51.04
+                },
+                {
+                    "object_id": 4,
+                    "object_type": "square",
+                    "distance": 48.51
+                },
+                {
+                    "object_id": 5,
+                    "object_type": "circle",
+                    "distance": 42.76
+                },
+                {
+                    "object_id": 6,
+                    "object_type": "square",
+                    "distance": 64.03
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "color": [
+                255,
+                0,
+                0
+            ],
+            "bboxlocation": [
+                [
+                    42,
+                    58
+                ],
+                [
+                    52,
+                    68
+                ]
+            ],
+            "object_type": "circle",
+            "color_name": "blue",
+            "distances": [
+                {
+                    "object_id": 1,
+                    "object_type": "circle",
+                    "distance": 44.72
+                },
+                {
+                    "object_id": 2,
+                    "object_type": "circle",
+                    "distance": 51.04
+                },
+                {
+                    "object_id": 4,
+                    "object_type": "square",
+                    "distance": 41.3
+                },
+                {
+                    "object_id": 5,
+                    "object_type": "circle",
+                    "distance": 21.0
+                },
+                {
+                    "object_id": 6,
+                    "object_type": "square",
+                    "distance": 21.1
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "color": [
+                243,
+                194,
+                246
+            ],
+            "bboxlocation": [
+                [
+                    2,
+                    64
+                ],
+                [
+                    11,
+                    73
+                ]
+            ],
+            "object_type": "square",
+            "color_name": "pink",
+            "distances": [
+                {
+                    "object_id": 1,
+                    "object_type": "circle",
+                    "distance": 59.08
+                },
+                {
+                    "object_id": 2,
+                    "object_type": "circle",
+                    "distance": 48.51
+                },
+                {
+                    "object_id": 3,
+                    "object_type": "circle",
+                    "distance": 41.3
+                },
+                {
+                    "object_id": 5,
+                    "object_type": "circle",
+                    "distance": 20.62
+                },
+                {
+                    "object_id": 6,
+                    "object_type": "square",
+                    "distance": 62.39
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "color": [
+                0,
+                0,
+                255
+            ],
+            "bboxlocation": [
+                [
+                    21,
+                    58
+                ],
+                [
+                    31,
+                    68
+                ]
+            ],
+            "object_type": "circle",
+            "color_name": "red",
+            "distances": [
+                {
+                    "object_id": 1,
+                    "object_type": "circle",
+                    "distance": 45.88
+                },
+                {
+                    "object_id": 2,
+                    "object_type": "circle",
+                    "distance": 42.76
+                },
+                {
+                    "object_id": 3,
+                    "object_type": "circle",
+                    "distance": 21.0
+                },
+                {
+                    "object_id": 4,
+                    "object_type": "square",
+                    "distance": 20.62
+                },
+                {
+                    "object_id": 6,
+                    "object_type": "square",
+                    "distance": 42.05
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "color": [
+                0,
+                255,
+                0
+            ],
+            "bboxlocation": [
+                [
+                    64,
+                    57
+                ],
+                [
+                    73,
+                    66
+                ]
+            ],
+            "object_type": "square",
+            "color_name": "green",
+            "distances": [
+                {
+                    "object_id": 1,
+                    "object_type": "circle",
+                    "distance": 51.04
+                },
+                {
+                    "object_id": 2,
+                    "object_type": "circle",
+                    "distance": 64.03
+                },
+                {
+                    "object_id": 3,
+                    "object_type": "circle",
+                    "distance": 21.1
+                },
+                {
+                    "object_id": 4,
+                    "object_type": "square",
+                    "distance": 62.39
+                },
+                {
+                    "object_id": 5,
+                    "object_type": "circle",
+                    "distance": 42.05
+                }
+            ]
+        },
+        {
+            "question": "What is the color of the object that is closest to the blue object?",
+            "question_vector": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+            ],
+            "answer": "red"
+        },
+        {
+            "question": "How many objects have the shape of the blue object?",
+            "question_vector": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                1
+            ],
+            "answer": 4
+        },
+        {
+            "question": "What is the color of the object that is closest to the pink object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+            ],
+            "answer": "red"
+        },
+        {
+            "question": "What is the color of the object that is closest to the green object?",
+            "question_vector": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+            ],
+            "answer": "blue"
+        },
+        {
+            "question": "What is the shape of the object that is farthest from the orange object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            "answer": "square"
+        },
+        {
+            "question": "What is the shape of the object that is farthest from the green object?",
+            "question_vector": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            "answer": "circle"
+        },
+        {
+            "question": "What is the shape of the object that is farthest from the red object?",
+            "question_vector": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            "answer": "circle"
+        },
+        {
+            "question": "What is the shape of the object that is farthest from the pink object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            "answer": "square"
+        },
+        {
+            "question": "How many objects have the shape of the orange object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                1
+            ],
+            "answer": 4
+        },
+        {
+            "question": "What is the color of the object that is closest to the orange object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0
+            ],
+            "answer": "yellow"
+        },
+        {
+            "question": "Is the blue object on the left or the right?",
+            "question_vector": [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+            ],
+            "answer": "right"
+        },
+        {
+            "question": "Is the red object on the left or the right?",
+            "question_vector": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+            ],
+            "answer": "left"
+        },
+        {
+            "question": "Is the orange object on the left or the right?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+            ],
+            "answer": "right"
+        },
+        {
+            "question": "Is the yellow object on the left or the right?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                1,
+                0
+            ],
+            "answer": "left"
+        },
+        {
+            "question": "What is the shape of the pink object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1
+            ],
+            "answer": "square"
+        },
+        {
+            "question": "Is the green object on the left or the right?",
+            "question_vector": [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+            ],
+            "answer": "right"
+        },
+        {
+            "question": "What is the shape of the yellow object?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0,
+                0,
+                1
+            ],
+            "answer": "circle"
+        },
+        {
+            "question": "Is the orange object on the top or the bottom?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "answer": "top"
+        },
+        {
+            "question": "Is the yellow object on the top or the bottom?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "answer": "top"
+        },
+        {
+            "question": "Is the pink object on the left or the right?",
+            "question_vector": [
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+            ],
+            "answer": "left",
+            "image_description_matrix": [
+                [
+                    "orange",
+                    "circle",
+                    34,
+                    14,
+                    44,
+                    24
+                ],
+                [
+                    "yellow",
+                    "circle",
+                    13,
+                    16,
+                    23,
+                    26
+                ],
+                [
+                    "blue",
+                    "circle",
+                    42,
+                    58,
+                    52,
+                    68
+                ],
+                [
+                    "pink",
+                    "square",
+                    2,
+                    64,
+                    11,
+                    73
+                ],
+                [
+                    "red",
+                    "circle",
+                    21,
+                    58,
+                    31,
+                    68
+                ],
+                [
+                    "green",
+                    "square",
+                    64,
+                    57,
+                    73,
+                    66
+                ]
+            ]
+        }
+    ]
+}
