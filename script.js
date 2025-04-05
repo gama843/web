@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // configuration
-    const JSON_PATH = 'descr.json';
-    const IMAGE_DIR = 'images/';
+    const TXT_PATH = 'human_baseline_test_subset/descr.txt';
     const AUDIO_PATH = 'audio/tick.wav';
     const QUESTION_TIME_LIMIT_S = 8;
 
@@ -22,13 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const PLOT_CATEGORIES = ['shape', 'topbottom', 'leftright', 'closest', 'furthest', 'count', 'non-relational', 'relational', 'overall'];
     const PLOT_COLORS = {
         'shape': 'rgb(40, 167, 69)',    // green
-        'topbottom': 'rgb(40, 167, 69)', 
-        'leftright': 'rgb(40, 167, 69)', 
+        'topbottom': 'rgb(40, 167, 69)',
+        'leftright': 'rgb(40, 167, 69)',
         'closest': 'rgb(40, 110, 180)',  // blue
-        'furthest': 'rgb(40, 110, 180)', 
-        'count': 'rgb(40, 110, 180)',    
+        'furthest': 'rgb(40, 110, 180)',
+        'count': 'rgb(40, 110, 180)',
         'non-relational': 'rgb(253, 126, 20)', // orange
-        'relational': 'rgb(253, 126, 20)',   
+        'relational': 'rgb(253, 126, 20)',
         'overall': 'rgb(220, 53, 69)'      // red
     };
 
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsChartCtx = document.getElementById('results-chart')?.getContext('2d');
 
     // state
-    let sessionData = null;
     let allQuestions = [];
     let currentQuestionIndex = 0;
     let sessionResults = [];
@@ -114,24 +112,68 @@ document.addEventListener('DOMContentLoaded', () => {
             ? { 8: "closest", 9: "furthest", 10: "count" }
             : { 8: "topbottom", 9: "leftright", 10: "shape" };
         for (const idx in map) {
-            if (vector[idx] === 1) return map[idx];
+            if (vector.length > idx && vector[idx] === 1) return map[idx];
         }
         return null;
     }
+
+
+    function parseTextData(text) {
+        allQuestions = [];
+        const lines = text.split('\n');
+        console.log(`Read ${lines.length} lines from description file.`);
+
+        lines.forEach((line, index) => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return;
+
+            const parts = trimmedLine.split('\t');
+            if (parts.length !== 4) {
+                console.warn(`Skipping line ${index + 1}: Incorrect number of columns (${parts.length}). Expected 4.`);
+                return;
+            }
+
+            const [imagePath, question, correctAnswer, vectorString] = parts;
+
+            if (!/^[01]+$/.test(vectorString)) {
+                 console.warn(`Skipping line ${index + 1}: Invalid characters in question vector string: ${vectorString}`);
+                 return;
+            }
+            const question_vector = vectorString.split('').map(Number);
+
+             if (!Array.isArray(question_vector) || question_vector.length < 11) {
+                 console.warn(`Skipping line ${index + 1} for image ${imagePath}: Invalid or too short question vector (length ${question_vector.length}).`);
+                 return;
+             }
+
+            allQuestions.push({
+                imagePath: imagePath,
+                question: question,
+                correctAnswer: String(correctAnswer),
+                question_vector: question_vector
+            });
+        });
+
+        console.log(`Successfully parsed ${allQuestions.length} valid questions.`);
+    }
+
 
     function loadInitialData() {
         startButton.disabled = true;
         startButton.textContent = "Loading Data...";
         loadingErrorEl.style.display = 'none';
 
-        fetch(JSON_PATH)
+        fetch(TXT_PATH)
             .then(response => {
-                if (!response.ok) throw new Error(`HTTP ${response.status}. Ensure server is running & file exists.`);
-                return response.json();
+                if (!response.ok) throw new Error(`HTTP ${response.status}. Could not load ${TXT_PATH}.`);
+                return response.text();
             })
-            .then(data => {
-                if (!data || Object.keys(data).length === 0) throw new Error("Data file is empty.");
-                sessionData = data;
+            .then(textData => {
+                if (!textData || textData.trim().length === 0) throw new Error("Data file is empty.");
+                parseTextData(textData);
+                if (allQuestions.length === 0) {
+                     throw new Error("No valid questions could be parsed from the data file.");
+                }
                 displayExampleImage();
                 initAudio();
                 startButton.disabled = false;
@@ -139,66 +181,42 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error("Initial load error:", error);
-                loadingErrorEl.textContent = `Error loading data: ${error.message}. Cannot start. Check console & setup.`;
+                loadingErrorEl.textContent = `Error loading data: ${error.message}. Cannot start. Check console, file path (${TXT_PATH}), and file format.`;
                 loadingErrorEl.style.display = 'block';
                 startButton.textContent = "Error Loading";
             });
     }
 
     function displayExampleImage() {
-        if (!sessionData) return;
-        const keys = Object.keys(sessionData);
-        const lastKey = keys[keys.length - 1];
-        if (lastKey) {
-            exampleImageEl.src = `${IMAGE_DIR}${lastKey}`;
+        if (allQuestions && allQuestions.length > 0) {
+            exampleImageEl.src = allQuestions[0].imagePath;
             exampleImageEl.alt = "Example visual reasoning image";
         } else {
-            exampleImageEl.alt = "Could not load example image";
+             exampleImageEl.alt = "Could not load example image - no questions parsed";
+             console.warn("No questions available to display an example image.");
         }
     }
 
     function initializeTest() {
-        if (!sessionData) {
-            console.error("Cannot init test - no data.");
-            statusDiv.textContent = 'Error: Data not loaded.'; return;
+        if (allQuestions.length === 0) {
+            console.error("Cannot initialize test - no questions loaded.");
+            statusDiv.textContent = 'Error: No questions available.';
+            statusDiv.style.color = 'red';
+             testContainer.style.display = 'none';
+             introContainer.style.display = 'block';
+             loadingErrorEl.textContent = 'Error: No valid questions found. Cannot start the test.';
+             loadingErrorEl.style.display = 'block';
+             startButton.disabled = true;
+            return;
         }
+
         statusDiv.textContent = 'Preparing test...';
         statusDiv.style.color = '#666';
 
-        flattenData();
-        if (allQuestions.length > 0) {
-            createAnswerButtons();
-            startSession();
-        } else {
-            statusDiv.textContent = 'Error: No valid questions found in data.';
-            statusDiv.style.color = 'red';
-        }
+        createAnswerButtons();
+        startSession();
     }
 
-    function flattenData() {
-        allQuestions = [];
-        if (!sessionData) return;
-        for (const imgName in sessionData) {
-            if (!sessionData.hasOwnProperty(imgName)) continue;
-            const items = sessionData[imgName];
-            const questions = items.filter(item =>
-                item?.question && item?.question_vector && item?.answer !== undefined
-            );
-            questions.forEach(q => {
-                if (Array.isArray(q.question_vector) && q.question_vector.length >= 11) {
-                    allQuestions.push({
-                        imagePath: `${IMAGE_DIR}${imgName}`,
-                        question: q.question,
-                        correctAnswer: String(q.answer),
-                        question_vector: q.question_vector
-                    });
-                } else {
-                    console.warn(`Skipping question for ${imgName} due to invalid vector.`);
-                }
-            });
-        }
-        console.log(`Flattened ${allQuestions.length} valid questions.`);
-    }
 
     function createAnswerButtons() {
         answersContainer.innerHTML = '';
@@ -215,7 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startSession() {
-        if (allQuestions.length === 0) return;
+        if (allQuestions.length === 0) {
+            console.error("Attempted to start session with no questions.");
+            return;
+        }
         sessionId = generateUUID();
         sessionStartTime = new Date().toISOString();
         currentQuestionIndex = 0;
@@ -258,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        if (subtype === 'leftright' && leftBtn && rightBtn) {
+         if (subtype === 'leftright' && leftBtn && rightBtn) {
             const lIdx = visible.indexOf(leftBtn);
             const rIdx = visible.indexOf(rightBtn);
             if (rIdx !== -1 && lIdx !== -1 && rIdx < lIdx) {
@@ -286,10 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
         moveToNextQuestion();
     }
 
-    function recordResult(userAnswer, timedOut) {
+     function recordResult(userAnswer, timedOut) {
         if (currentQuestionIndex >= allQuestions.length) return;
         const q = allQuestions[currentQuestionIndex];
         const isCorrect = !timedOut && userAnswer === q.correctAnswer;
+
         sessionResults.push({
             questionIndex: currentQuestionIndex,
             imagePath: q.imagePath,
@@ -302,7 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
             timeTakenMs: Date.now() - questionStartTime,
             timedOut: timedOut,
         });
-    }
+     }
+
 
     function moveToNextQuestion() {
         stopTimer();
@@ -311,49 +334,68 @@ document.addEventListener('DOMContentLoaded', () => {
         displayQuestion();
     }
 
+
     function startTimer() {
         let timeLeft = QUESTION_TIME_LIMIT_S;
         timerSpan.textContent = timeLeft;
         timerInterval = setInterval(() => {
             timeLeft--;
             timerSpan.textContent = timeLeft;
-            if (timeLeft <= 0) handleTimeout();
+            if (timeLeft <= 0) {
+                handleTimeout();
+            }
         }, 1000);
     }
 
-    function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+    function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
 
-    function resetTimer() { stopTimer(); timerSpan.textContent = QUESTION_TIME_LIMIT_S; }
+    function resetTimer() {
+        stopTimer();
+        timerSpan.textContent = QUESTION_TIME_LIMIT_S;
+    }
+
 
     function calculateAccuracies() {
         const totals = { overall: 0, relational: 0, 'non-relational': 0 };
         const corrects = { overall: 0, relational: 0, 'non-relational': 0 };
         PLOT_CATEGORIES.forEach(cat => {
-             if (!totals[cat]) totals[cat] = 0; // Initialize subtype counts if not category
+             if (!totals[cat]) totals[cat] = 0;
              if (!corrects[cat]) corrects[cat] = 0;
         });
 
 
         sessionResults.forEach(res => {
+            if (!res.questionVector || res.questionVector.length < 11) {
+                console.warn("Skipping result in accuracy calculation due to invalid vector:", res);
+                return;
+            }
+
             const subtype = res.subtype;
             const isRelational = res.questionVector[6] === 1;
             const category = isRelational ? 'relational' : 'non-relational';
 
             totals.overall++;
             totals[category]++;
-            if (subtype) totals[subtype]++;
+            if (subtype && totals[subtype] !== undefined) {
+                 totals[subtype]++;
+            }
 
 
             if (res.isCorrect) {
                 corrects.overall++;
                 corrects[category]++;
-                if (subtype) corrects[subtype]++;
+                 if (subtype && corrects[subtype] !== undefined) {
+                     corrects[subtype]++;
+                 }
             }
         });
 
         const accuracies = {};
         PLOT_CATEGORIES.forEach(cat => {
-            accuracies[cat] = totals[cat] > 0 ? (corrects[cat] / totals[cat]) : 0;
+            accuracies[cat] = (totals[cat] !== undefined && totals[cat] > 0) ? (corrects[cat] / totals[cat]) : 0;
         });
 
         console.log("Calculated Accuracies:", accuracies);
@@ -363,101 +405,102 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateResultsChart(accuracies) {
         if (!resultsChartCtx) {
             console.error("Canvas context not found for chart.");
-            return;
+            return Promise.reject("Canvas context not found");
         }
 
          if (resultsChartInstance) {
             resultsChartInstance.destroy();
-        }
+         }
 
 
         const chartData = PLOT_CATEGORIES.map(cat => accuracies[cat] !== undefined ? accuracies[cat] : 0);
         const backgroundColors = PLOT_CATEGORIES.map(cat => PLOT_COLORS[cat] || 'grey');
 
-        resultsChartInstance = new Chart(resultsChartCtx, {
-            type: 'bar',
-            data: {
-                labels: PLOT_CATEGORIES,
-                datasets: [{
-                    label: 'Accuracy',
-                    data: chartData,
-                    backgroundColor: backgroundColors,
-                    borderColor: backgroundColors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                scales: {
-                    x: { 
-                        beginAtZero: true,
-                        max: 1,
-                        title: {
-                            display: true,
-                            text: 'Accuracy'
+        return new Promise((resolve) => {
+            resultsChartInstance = new Chart(resultsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: PLOT_CATEGORIES,
+                    datasets: [{
+                        label: 'Accuracy',
+                        data: chartData,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 1,
+                            title: { display: true, text: 'Accuracy' },
+                            ticks: { stepSize: 0.2 }
                         },
-                         ticks: {
-                            stepSize: 0.2 
-                        }
+                        y: { beginAtZero: true }
                     },
-                    y: { 
-                         beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                     tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) { label += ': '; }
-                                if (context.parsed.x !== null) {
-                                    label += context.parsed.x.toFixed(4);
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x.toFixed(4);
+                                    }
+                                    return label;
                                 }
-                                return label;
                             }
+                        },
+                         datalabels: {
+                            anchor: 'end',
+                            align: 'right',
+                            formatter: (value) => (value * 100).toFixed(2) + '%',
+                            color: '#333',
+                            offset: 4,
+                            font: { size: 10 }
                         }
                     },
-
-                     datalabels: { 
-                        anchor: 'end',
-                        align: 'right',
-                        formatter: (value) => value.toFixed(4),
-                        color: '#333',
-                        offset: 4
+                    animation: {
+                        onComplete: () => {
+                             console.log("Chart animation complete.");
+                             resolve();
+                        }
                     }
                 },
-            }
+            });
+             setTimeout(resolve, 500);
         });
-         // small delay for chart to render before getting image data for zip
-        return new Promise(resolve => setTimeout(resolve, 300));
     }
 
     async function generateZip(finalOutput, chartInstance) {
          if (!chartInstance || !chartInstance.canvas) {
             console.error("Chart instance or canvas not available for ZIP generation.");
-            downloadLink.textContent = "Error creating ZIP";
+            downloadLink.textContent = "Error creating ZIP (chart missing)";
+            downloadLink.style.display = 'inline-block';
             return;
          }
          if (typeof JSZip === 'undefined') {
             console.error("JSZip library not loaded.");
              downloadLink.textContent = "ZIP Library Error";
+             downloadLink.style.display = 'inline-block';
             return;
          }
 
          const zip = new JSZip();
 
-         // 1. add JSON results
          const jsonString = JSON.stringify(finalOutput, null, 2);
          zip.file("results.json", jsonString);
 
-         // 2. add chart image
          try {
             const chartImageDataUrl = chartInstance.toBase64Image('image/png');
-             const base64Response = await fetch(chartImageDataUrl);
-             const chartBlob = await base64Response.blob();
+            if (!chartImageDataUrl || chartImageDataUrl === 'data:,') {
+                 throw new Error("Generated chart image data URL is empty or invalid.");
+            }
+            const base64Response = await fetch(chartImageDataUrl);
+            const chartBlob = await base64Response.blob();
              zip.file("accuracy_plot.png", chartBlob, { binary: true });
 
              const zipBlob = await zip.generateAsync({ type: "blob" });
@@ -476,8 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
      }
 
 
-    // finalizes the session, calculates accuracy, displays plot, and prepares ZIP download
-    async function endSession() { // made async to await chart render/zip
+    async function endSession() {
         stopTimer();
         const sessionEndTime = new Date().toISOString();
         const totalTimeMs = sessionStartTime ? (new Date(sessionEndTime).getTime() - new Date(sessionStartTime).getTime()) : 0;
@@ -502,18 +544,31 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionIdDisplay.textContent = sessionId;
         downloadLink.textContent = "Generating Download...";
         downloadLink.style.display = 'inline-block';
+        downloadLink.href="#";
 
-        await generateResultsChart(accuracies); // wait for chart to draw
 
-        await generateZip(finalOutput, resultsChartInstance);
-        console.log("ZIP preparation complete.");
+        try {
+            console.log("Generating results chart...");
+            await generateResultsChart(accuracies);
+            console.log("Chart generated, preparing ZIP...");
+            if (resultsChartInstance) {
+                 await generateZip(finalOutput, resultsChartInstance);
+                 console.log("ZIP preparation complete.");
+            } else {
+                 console.error("Chart instance not available after generation.");
+                 downloadLink.textContent = "Error creating ZIP (Chart failed)";
+            }
+        } catch(error) {
+             console.error("Error during end session processing (chart/zip):", error);
+             downloadLink.textContent = "Error creating Download";
+        }
 
     }
 
     startButton.addEventListener('click', () => {
          if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume().catch(e => console.error("Audio resume error:", e));
-        }
+            audioContext.resume().catch(e => console.error("Audio resume error on start:", e));
+         }
         introContainer.style.display = 'none';
         testContainer.style.display = 'block';
         initializeTest();
