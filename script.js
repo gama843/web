@@ -11,20 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     const SUBTYPE_ANSWERS = {
         closest: ["pink", "red", "blue", "green", "yellow", "orange"],
-        furthest: ["square", "circle"],
+        farthest: ["square", "circle"],
         count: ["1", "2", "3", "4", "5", "6"],
         shape: ["square", "circle"],
         topbottom: ["top", "bottom"],
         leftright: ["left", "right"]
     };
     // plot categories and colors
-    const PLOT_CATEGORIES = ['shape', 'topbottom', 'leftright', 'closest', 'furthest', 'count', 'non-relational', 'relational', 'overall'];
+    const PLOT_CATEGORIES = ['shape', 'topbottom', 'leftright', 'closest', 'farthest', 'count', 'non-relational', 'relational', 'overall'];
     const PLOT_COLORS = {
         'shape': 'rgb(40, 167, 69)',    // green
         'topbottom': 'rgb(40, 167, 69)',
         'leftright': 'rgb(40, 167, 69)',
         'closest': 'rgb(40, 110, 180)',  // blue
-        'furthest': 'rgb(40, 110, 180)',
+        'farthest': 'rgb(40, 110, 180)',
         'count': 'rgb(40, 110, 180)',
         'non-relational': 'rgb(253, 126, 20)', // orange
         'relational': 'rgb(253, 126, 20)',
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!vector || vector.length < 11) return null;
         const isRelational = vector[6] === 1;
         const map = isRelational
-            ? { 8: "closest", 9: "furthest", 10: "count" }
+            ? { 8: "closest", 9: "farthest", 10: "count" }
             : { 8: "topbottom", 9: "leftright", 10: "shape" };
         for (const idx in map) {
             if (vector.length > idx && vector[idx] === 1) return map[idx];
